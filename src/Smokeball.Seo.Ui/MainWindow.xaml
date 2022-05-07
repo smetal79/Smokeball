@@ -1,0 +1,120 @@
+﻿<Window x:Class="Smokeball.Seo.Ui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Smokeball.Seo.Ui"
+        xmlns:validationRules="clr-namespace:Smokeball.Seo.Ui.ValidationRules"
+        mc:Ignorable="d"
+        Title="Seo" Height="450" Width="800"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+         TextElement.FontWeight="Regular"
+         TextElement.FontSize="13"
+         TextOptions.TextFormattingMode="Ideal"
+         TextOptions.TextRenderingMode="Auto"
+         Background="{DynamicResource MaterialDesignPaper}"
+         FontFamily="{DynamicResource MaterialDesignFont}">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open"
+                    Executed="SearchExecuted"/>
+    </Window.CommandBindings>
+    <Window.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <!-- To make the trigger below work, the foreground must be set here not directly on the TextBox -->
+            <Setter Property="Foreground" Value="Black"  />
+            <Setter Property="Margin" Value="10"  />
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="Text" Value="" />
+                        <Condition Property="IsKeyboardFocused" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <!-- Set the hint color when the text box is empty and does not have focus -->
+                    <Setter Property="Foreground" Value="Black" />
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    
+    <Grid>
+        <materialDesign:Card Padding="32" Margin="16">
+            <StackPanel>
+
+                <TextBox
+                    x:Name="uri"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Width="300"
+                    materialDesign:HintAssist.Foreground="Blue" 
+                    materialDesign:TextFieldAssist.UnderlineBrush="Green"
+                    materialDesign:HintAssist.Hint="Url"
+                 >
+                    <TextBox.Resources>
+                        <!-- This controls the underline color when the text box does not have focus -->
+                        <SolidColorBrush x:Key="MaterialDesignTextBoxBorder" Color="Cyan" />
+                    </TextBox.Resources>
+                    <Binding Path="Uri" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validationRules:UriValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+
+                <TextBox 
+                    x:Name="searchText"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Width="300"
+                    materialDesign:HintAssist.Foreground="Blue" 
+                    materialDesign:TextFieldAssist.UnderlineBrush="Green"
+                    materialDesign:HintAssist.Hint="Keywords"
+                 >
+                    <TextBox.Resources>
+                        <!-- This controls the underline color when the text box does not have focus -->
+                        <SolidColorBrush x:Key="MaterialDesignTextBoxBorder" Color="Cyan" />
+                    </TextBox.Resources>
+                    <Binding Path="Keywords" UpdateSourceTrigger="PropertyChanged"> 
+                        <Binding.ValidationRules>
+                            <validationRules:NonEmptyTextboxValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Command="ApplicationCommands.Open" Name="MyButton" Margin="10"  Height="50" Width="200" Content="Search">
+                    <Button.Style>
+
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatDarkBgButton}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=uri}" Value="False"/>
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=searchText}" Value="False"/>
+                                        <Condition Binding="{Binding Path=IsFetching }" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Button.IsEnabled" Value="True"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <ProgressBar Value="35" IsIndeterminate="True">
+                    <ProgressBar.Style>
+                        <Style>
+                            <Setter Property="ProgressBar.Visibility" Value="Hidden"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{ Binding Path=IsFetching }" Value="True">
+                                    <Setter Property="ProgressBar.Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
+
+                <TextBlock x:Name="SeoStatus" FontSize="20" FontWeight="Bold" Text="{ Binding Rankings }"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>
